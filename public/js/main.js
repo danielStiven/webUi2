@@ -2,87 +2,64 @@
  * Created by danielstiven on 2/13/17.
  */
 document.addEventListener("DOMContentLoaded", function(event) {
-   var jokeSection =  document.getElementById("jokeSection");
-   jokeSection.style.display = 'block';
-   var searchField = document.getElementById('searchField');
-   var repoList = document.getElementById('repoList');
+    var formularioLocalStorage = {
+        nombre :   document.getElementById("nombre-input"),
+        apellido : document.getElementById("apellido-input"),
+        botonSave : document.getElementById("save"),
+        botonVer : document.getElementById("ver"),
+        modal : document.getElementById('myModal'),
+        modalContent : document.getElementById('modal-local-storage-content'),
+        guardarLocalStorage : function(){
+            if(formularioLocalStorage.nombre.value && formularioLocalStorage.apellido.value){
+                var actualArrayData = (localStorage["data-array"]? JSON.parse(localStorage["data-array"]) : [] );
+                var dataToSave = {
+                    nombre : formularioLocalStorage.nombre.value,
+                    apellido : formularioLocalStorage.apellido.value
+                };
 
-    /** Funcion para cargar los chistes. **/
-   var cargarChistes = function (){
-      getAjax('http://api.icndb.com/jokes/random', null).then(
-          function(data){
-              jokeSection.classList.remove('errorBackGround');
-              jokeSection.innerHTML = data.value.joke;
-          },
-          function(data){
-              if (jokeSection.className !== 'errorBackGround') {
-                  jokeSection.className = 'errorBackGround';
-              }
-              jokeSection.innerHTML = 'ERROR';
+                actualArrayData.push(dataToSave);
+                localStorage["data-array"] = JSON.stringify(actualArrayData);
+            }
 
-      });
-   };
+        },
+        verLocalStorage : function(){
+            /** Borrando todos los hijos **/
+            while (formularioLocalStorage.modalContent.firstChild) {
+                formularioLocalStorage.modalContent.removeChild(formularioLocalStorage.modalContent.firstChild);
+            }
 
-   /** Funcion para buscar los repositorios. **/
-    var buscarRepo = function (){
-        getAjax('https://api.github.com/search/repositories', { q : searchField.value }).then(
-            function(data){
-                console.log(data);
-                if(data && data.items){
+            var actualArrayData = (localStorage["data-array"]? JSON.parse(localStorage["data-array"]) : [] );
 
-                    /** Borrando todos los hijos **/
-                    while (repoList.firstChild) {
-                        repoList.removeChild(repoList.firstChild);
-                    }
+            /** Agregando los resultados **/
+            var div = formularioLocalStorage.modalContent.appendChild(document.createElement("div"));
+            for(var i=0; i < actualArrayData.length; i++){
+                var divItem = document.createElement("ol");
+                var li = document.createElement("li").appendChild(document.createTextNode("Nombre " + actualArrayData[i].nombre));
+                divItem.appendChild(li);
+               // var liNombre = document.createElement("li");
+                //var liApellido = document.createElement("li").appendChild(document.createTextNode("Apellido " + actualArrayData[i].apellido));
+                var br = document.createElement("br");
 
+                //divItem.appendChild(liApellido);
+                div.appendChild(divItem);
+                div.appendChild(br);
+            }
 
-                    /** Agregando los resultados **/
-                    var ol = repoList.appendChild(document.createElement("ol"));
-                    for(var i=0; i < data.items.length; i++){
-                        var li = document.createElement("li");
-                        var text = document.createTextNode(data.items[i].full_name);
-                        li.appendChild(text);
-                        ol.appendChild(li);
-                    }
-                }
-            },
-            function(data){
+            formularioLocalStorage.modal.style.display = "block";
 
-        });
+        }
     };
 
-   /** Funcion para manejar peticiones ajax con GET. **/
-   var getAjax = function(url, config){
-       return  new Promise(function(resolve, reject) {
-           var  http = new XMLHttpRequest();
+    formularioLocalStorage.botonSave.addEventListener('click', formularioLocalStorage.guardarLocalStorage);
+    formularioLocalStorage.botonVer.addEventListener('click', formularioLocalStorage.verLocalStorage);
 
-           var urlParameters = '';
-           if(config && typeof config === 'object'){
-               for (var field in config) {
-                   urlParameters += ( urlParameters ? '&' : '?');
-                   urlParameters += (field + '=' + config[field]);
-               }
-           }
-
-           http.open('GET', (url + urlParameters), true);
-           http.send(null);
-           function returnCallback() {
-               if(http.readyState == 4) {
-                   if(http.status == 200) {
-                       resolve(JSON.parse(http.response));
-                   } else {
-                       reject('Error');
-                   }
-               }
-           }
-           http.onreadystatechange = returnCallback;
-
-       });
-   };
-
-   document.getElementById('boton1').addEventListener('click', cargarChistes);
-   searchField.addEventListener('change', buscarRepo);
-   searchField.value =  'JavaScript';
-   searchField.dispatchEvent(new CustomEvent("change"));
-
+    document.getElementsByClassName("close")[0].addEventListener('click', function(){
+        formularioLocalStorage.modal.style.display = "none";
+    });
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == formularioLocalStorage.modal) {
+            formularioLocalStorage.modal.style.display = "none";
+        }
+    }
 });
