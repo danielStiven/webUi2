@@ -54,13 +54,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
         }
     };
 
-    formularioLocalStorage.botonSave.addEventListener('click', formularioLocalStorage.guardarLocalStorage);
-    formularioLocalStorage.botonVer.addEventListener('click', formularioLocalStorage.verLocalStorage);
-    formularioLocalStorage.botonDelete.addEventListener('click', formularioLocalStorage.deleteLocalStorage);
+    if(formularioLocalStorage.botonSave){
+        formularioLocalStorage.botonSave.addEventListener('click', formularioLocalStorage.guardarLocalStorage);
+    }
 
-    document.getElementsByClassName("close")[0].addEventListener('click', function(){
-        formularioLocalStorage.modal.style.display = "none";
-    });
+    if(formularioLocalStorage.botonVer){
+        formularioLocalStorage.botonVer.addEventListener('click', formularioLocalStorage.verLocalStorage);
+    }
+
+    if(formularioLocalStorage.botonDelete){
+        formularioLocalStorage.botonDelete.addEventListener('click', formularioLocalStorage.deleteLocalStorage);
+    }
+
+    if(document.getElementsByClassName("close")[0]){
+        document.getElementsByClassName("close")[0].addEventListener('click', function(){
+            formularioLocalStorage.modal.style.display = "none";
+        });
+    }
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
         if (event.target == formularioLocalStorage.modal) {
