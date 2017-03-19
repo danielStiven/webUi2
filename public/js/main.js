@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         apellido : document.getElementById("apellido-input"),
         botonSave : document.getElementById("save"),
         botonVer : document.getElementById("ver"),
+        botonDelete : document.getElementById("delete"),
         modal : document.getElementById('myModal'),
         modalContent : document.getElementById('modal-local-storage-content'),
         guardarLocalStorage : function(){
@@ -33,25 +34,29 @@ document.addEventListener("DOMContentLoaded", function(event) {
             /** Agregando los resultados **/
             var div = formularioLocalStorage.modalContent.appendChild(document.createElement("div"));
             for(var i=0; i < actualArrayData.length; i++){
-                var divItem = document.createElement("ol");
-                var li = document.createElement("li").appendChild(document.createTextNode("Nombre " + actualArrayData[i].nombre));
+                var divItem = document.createElement("div");
+                divItem.className = "align-center";
+                var li = document.createElement("span").appendChild(document.createTextNode("Nombre: " + actualArrayData[i].nombre));
                 divItem.appendChild(li);
-               // var liNombre = document.createElement("li");
-                //var liApellido = document.createElement("li").appendChild(document.createTextNode("Apellido " + actualArrayData[i].apellido));
-                var br = document.createElement("br");
-
-                //divItem.appendChild(liApellido);
+                divItem.appendChild(document.createElement("br"));
+                var liApellido = document.createElement("li").appendChild(document.createTextNode("Apellido: " + actualArrayData[i].apellido));
+                divItem.appendChild(liApellido);
+                divItem.appendChild(document.createElement("br"));
+                divItem.appendChild(document.createElement("br"));
                 div.appendChild(divItem);
-                div.appendChild(br);
             }
 
             formularioLocalStorage.modal.style.display = "block";
 
+        },
+        deleteLocalStorage : function(){
+            localStorage.removeItem("data-array");
         }
     };
 
     formularioLocalStorage.botonSave.addEventListener('click', formularioLocalStorage.guardarLocalStorage);
     formularioLocalStorage.botonVer.addEventListener('click', formularioLocalStorage.verLocalStorage);
+    formularioLocalStorage.botonDelete.addEventListener('click', formularioLocalStorage.deleteLocalStorage);
 
     document.getElementsByClassName("close")[0].addEventListener('click', function(){
         formularioLocalStorage.modal.style.display = "none";
